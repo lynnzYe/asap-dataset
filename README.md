@@ -86,6 +86,7 @@ Each row in `metadata.csv` file contains the following information:
 - **start**: If not blank, specifies a time in seconds where the original MAESTRO performance (audio and MIDI) has been cut to match the annotations. The ASAP performance at time 0 will match the original MAESTRO performance at this time
 - **end**: The same as start, but for the end of the original MAESTRO performance. The end of the ASAP performance is at this time in the original MAESTRO performance
 - **audio_performance**: the path of the (properly cut) audio file in the ASAP dataset (if one exists)
+- **robust_note_aignment**: the robustness of the note alignment(1 = robust, 0 = not robust)
 
 
 ### Annotation json
@@ -110,6 +111,17 @@ For each performance and MIDI score we provide a tab-separated value (TSV) file 
 - **Beats and downbeats**: annotated with either `b` (for beats), `db` (for downbeats) or `bR` (in cases where standard notation rules are not followed---e.g. rubato or pitckup measures in the middle of the score---and we cannot determine the exact beat position)
 - **time signature changes**: the time signature as a string (e.g., `4/4`).
 - **key changes** (k in [-11,11]): the number of accidentals in the key signature, where 0 is none, positive numbers count sharps and negative numbers count flats.
+
+
+### Nota alignment TSV annotation
+For each MIDI performance and MusicXML score we provide a tab-separated value (TSV) file encoding a note-wise alignment of these files.
+
+- **xml_id**: The note ID of the score note in the MusicXML file. To uniquely identify notes that might be repeated (but only notated once in the score), the ID is suffixed with "-REPEAT_NUMBER", most commonly "-1" and "-2".
+- **midi_id**: The unique note ID in the MIDI performance. Note IDs are directly inferred if loading using [partitura](https://github.com/CPJKU/partitura) using the `load_performance_midi` method. MIDI notes are also uniquely identified by the information given in the next 4 columns:
+- **track**: The track number of the MIDI note.
+- **channel**: The channel number of the MIDI note.
+- **pitch**: The pitch of the MIDI note.
+- **onset**: The onset time of the MIDI note.
 
 
 ## Usage examples
