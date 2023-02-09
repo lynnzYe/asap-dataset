@@ -1,10 +1,27 @@
-# Aligned Scores and Performances (ASAP) dataset
-ASAP is a dataset of aligned musical scores (both MIDI and MusicXML) and performances (audio and MIDI), all with downbeat, beat, time signature, and key signature annotations. 
+# (n)ASAP: the (note-)Aligned Scores And Performances dataset
+
+(n)ASAP is a dataset of aligned musical scores and performances:
+
+It contains data and annotations in the following domains:
+- Musical scores (both MIDI and MusicXML)
+- Performances (performance MIDI and audio)
+- Performance downbeat, beat, time signature, and key signature annotations. 
+- MIDI score beat and downbeat annotations that align to the performance beat and downbeat annotations (= beat alignments).
+- MusicXML score to performance note alignments that align score notes (identified by added note IDs in the musicXML file) to performed notes (= note alignments).
+
+#### Dataset Uses:
+
+With the variety of annotations and alignments available (n)ASAP is suitable for several MIR tasks. The following is a incomplete list to help you navigate the dataset contents:
+
+- Audio to MIDI transcription (aligned MIDI and audio: see Maestro data)
+- Audio or MIDI beat/downbeat tracking, key and time signature estimation (ASAP annotations per file: see annotations.json and *_annotations.txt files) 
+- MIDI to Score transcription (beat-based ASAP annotations: see annotations.json and *_annotations.txt files. Or note-based (n)ASAP annotations: see note_alignment.tsv file)
+- Performance generation or analysis ((n)ASAP annotations: see note_alignment.tsv file)
 
 This repository contains all of the annotations, as well as all of the MIDI and MusicXML files. To get the audio files, follow the instructions below.
 
 #### Getting the Audio:
-The audio files are not distributed in this repository. To obtain them:
+The audio files are not distributed in this repository. You can obtain them from the maestro dataset:
 - Install dependencies:
   - python 3
   - librosa
@@ -19,18 +36,6 @@ The audio files are not distributed in this repository. To obtain them:
 
 The script has been tested in Windows, Linux and Mac OS with python 3.6, and the libraries librosa v0.7.2 and pandas v1.0.3.
 
-#### Citing
-If you use this dataset in any research, please cite the relevant paper:
-
-```
-@inproceedings{asap-dataset,
-  title={{ASAP}: a dataset of aligned scores and performances for piano transcription},
-  author={Foscarin, Francesco and McLeod, Andrew and Rigaux, Philippe and Jacquemard, Florent and Sakai, Masahiko},
-  booktitle={International Society for Music Information Retrieval Conference {(ISMIR)}},
-  year={2020},
-  pages={534--541}
-}
-```
 
 
 ## Dataset Content
@@ -113,7 +118,7 @@ For each performance and MIDI score we provide a tab-separated value (TSV) file 
 - **key changes** (k in [-11,11]): the number of accidentals in the key signature, where 0 is none, positive numbers count sharps and negative numbers count flats.
 
 
-### Nota alignment TSV annotation
+### Note alignment TSV annotation
 For each MIDI performance and MusicXML score we provide a tab-separated value (TSV) file encoding a note-wise alignment of these files.
 
 - **xml_id**: The note ID of the score note in the MusicXML file. To uniquely identify notes that might be repeated (but only notated once in the score), the ID is suffixed with "-REPEAT_NUMBER", most commonly "-1" and "-2".
@@ -125,6 +130,9 @@ For each MIDI performance and MusicXML score we provide a tab-separated value (T
 
 
 ## Usage examples
+
+
+### Beat Annotations
 
 ```python
 import pandas as pd
@@ -153,18 +161,102 @@ with open(Path(BASE_PATH,'asap_annotations.json')) as json_file:
     json_data = json.load(json_file)
 tsc_pieces = [p for p in json_data.keys() if len(json_data[p]["perf_time_signatures"])>1 ]
 
+# get all performances without aligned score
+with open(Path(BASE_PATH,'asap_annotations.json')) as json_file:
+    json_data = json.load(json_file)
+unaligned_performances = [p for p in json_data.keys() if not json_data[p]["score_and_performance_aligned"]]
+
+# get a list of non-robust note alignments
+df = pd.read_csv(Path(BASE_PATH,"metadata.csv"))
+not_robust = df[df["robust_note_alignment"] == 0]
+not_robust_list = not_robust["midi_performance"].tolist()
 ```
 
-## Limits of the dataset
-- The scores were written by non-professionals, and although we manually corrected them to filter out most of the incorrect notation, they still present some problems. Our suggestion is to use the corrected annotations provided in the TSV and in the JSON files rather than extracting them again from the score.
+### Note Alignments
 
+We use [Partitura](https://github.com/CPJKU/partitura) as file I/O utility. Note alignments (tsv files) can be parsed into python lists.
+
+```python
+import partitura as pt
+
+# load note alignments of the (n)ASAP dataset: 
+alignment = pt.io.importparangonada.load_alignment_from_ASAP(filename= 'path/to/note_alignment.tsv')
+# load scores of the (n)ASAP dataset: 
+score = pt.load_score(filename= 'path/to/xml_score.musicxml')
+# load performance of the (n)ASAP dataset: 
+performance = pt.load_performance_midi(filename= 'path/to/performance_name.mid')
+
+# sometimes scores contain repeats that need to unfolded to make the alignment make sense
+part = pt.merge_parts(score)
+unfolded_part = pt.unfold_part_maximal(part)
+
+# to get numpy arrays of the score and performance for downstream processing without partitura:
+score_array = part.note_array()
+performance_array = performance.note_array()
+```
+
+There is a [tutorial](https://cpjku.github.io/partitura_tutorial/) and [documentation](https://partitura.readthedocs.io/en/latest/) for Partitura that can help you get started!
+
+Besides the tsv alignments, (n)ASAP contains files ready for visualization and checking with the web tool [Parangonda](https://sildater.github.io/parangonada/). Go to the website and upload the csv files to visualize a note alignment. Partitura handles import and export for files created for and by Parangonada:
+
+
+```python
+import partitura as pt
+# export a note alignment for visualization with parangonada:
+pt.io.save_parangonada_csv(alignment, 
+                            performance_data, # this is a note array or Performance object as created above
+                            score_data, # this is a note array or Score object as created above
+                            outdir="path/to/dir")
+
+# import a corrected note alignment from parangonada:
+alignment = pt.io.importparangonada.load_parangonada_alignment(filename= 'path/to/note_alignment.csv')
+```
+
+
+## Information
+
+#### Dataset History:
+
+(n)ASAP is the product of several iterative improvements:
+- performance MIDI and audio recordings from the Yamaha piano-e-competition
+- assembled and curated by Hawthorne et al. ("Maestro dataset")
+- augmented with scores and by preliminary alignments by Jeong et al.
+- curated, beat-aligned, and annotated by Foscarin et al. ("ASAP dataset")
+- note-aligned by Peter et al.
+
+#### Citing
+If you use this dataset in any research, please cite the relevant papers. 
+For beat alignments:
+
+```
+@inproceedings{asap-dataset,
+  title={{ASAP}: a dataset of aligned scores and performances for piano transcription},
+  author={Foscarin, Francesco and McLeod, Andrew and Rigaux, Philippe and Jacquemard, Florent and Sakai, Masahiko},
+  booktitle={International Society for Music Information Retrieval Conference {(ISMIR)}},
+  year={2020},
+  pages={534--541}
+}
+```
+
+For note alignments:
+```
+@inproceedings{asap-dataset,
+  title={{ASAP}: a dataset of aligned scores and performances for piano transcription},
+  author={Foscarin, Francesco and McLeod, Andrew and Rigaux, Philippe and Jacquemard, Florent and Sakai, Masahiko},
+  booktitle={International Society for Music Information Retrieval Conference {(ISMIR)}},
+  year={2020},
+  pages={534--541}
+}
+```
+
+#### Limits of the dataset
+- The scores were written by non-professionals, and although we manually corrected them to filter out most of the incorrect notation, they still present some problems. Our suggestion is to use the corrected annotations provided in the TSV and in the JSON files rather than extracting them again from the score.
 - In certain cases (e.g., pickup measures in the middle of the score, rubato measures, complex embellishments) it is not possible to estabilish the position of the beat from the score. In our annotations we choose to mark those beats as "bR".
 - 31 performances are not aligned with the score. The cause is an incomplete performance or the player missing some beats due to a mistake. Altough not good for AMT and score production, those performances were manually checked and are still usable for beat/downbeat tracking. This information is in the json file.
-- We created this dataset to target MIR tasks such as beat/downbeat tracking, key signature estimation, time signature estimation. We haven't explored other tasks such as voice separation, beaming/tuplet creation, and expressive performance rendering. It is surely possible to perform them with the information from the xml-scores and our alignment, but we haven't tested if the data is of a sufficient quality for those tasks.
 
-## License
+#### License
 The dataset is made available under a [Creative Commons Attribution Non-Commercial Share-Alike 4.0 (CC BY-NC-SA 4.0) license](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
-## Versions
+#### Versions
 - The current version of ASAP (v1.1) has some corrections, as enumerated in the change notes on the tag [v1.1](https://github.com/fosfrancesco/asap-dataset/releases/tag/v1.1).
 - The initial version of ASAP (as it was released at ISMIR 2020) is available as [v1.0](https://github.com/fosfrancesco/asap-dataset/releases/tag/v1.0).
