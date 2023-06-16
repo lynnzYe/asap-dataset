@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 +.pyc
+*.npy
 /example_data/4x22/
 /output/
 /csv_output1/
