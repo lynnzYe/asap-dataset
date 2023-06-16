@@ -91,7 +91,7 @@ Each row in `metadata.csv` file contains the following information:
 - **start**: If not blank, specifies a time in seconds where the original MAESTRO performance (audio and MIDI) has been cut to match the annotations. The ASAP performance at time 0 will match the original MAESTRO performance at this time
 - **end**: The same as start, but for the end of the original MAESTRO performance. The end of the ASAP performance is at this time in the original MAESTRO performance
 - **audio_performance**: the path of the (properly cut) audio file in the ASAP dataset (if one exists)
-- **robust_note_aignment**: the robustness of the note alignment(1 = robust, 0 = not robust)
+- **robust_note_alignment**: the robustness of the note alignment(1 = robust, 0 = not robust)
 
 
 ### Annotation json
