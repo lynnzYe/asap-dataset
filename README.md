@@ -1,17 +1,17 @@
 # (n)ASAP: the (note-)Aligned Scores And Performances dataset
 
-(n)ASAP is a dataset of aligned musical scores and performances:
+(n)ASAP is a dataset of aligned musical scores and performances built by extending the [ASAP dataset](https://github.com/fosfrancesco/asap-dataset) with note-level annotations.
 
 It contains data and annotations in the following domains:
 - Musical scores (both MIDI and MusicXML)
 - Performances (performance MIDI and audio)
 - Performance downbeat, beat, time signature, and key signature annotations. 
-- MIDI score beat and downbeat annotations that align to the performance beat and downbeat annotations (= beat alignments).
-- MusicXML score to performance note alignments that align score notes (identified by added note IDs in the musicXML file) to performed notes (= note alignments).
+- MIDI score beat and downbeat annotations that align to the performance beat and downbeat annotations (= beat alignments)
+- MusicXML score to performance note alignments that align score notes (identified by added note IDs in the musicXML file) to performed notes (= note alignments)
 
 #### Dataset Uses:
 
-With the variety of annotations and alignments available (n)ASAP is suitable for several MIR tasks. The following is a incomplete list to help you navigate the dataset contents:
+With the variety of annotations and alignments available (n)ASAP is suitable for several MIR tasks. The following is an incomplete list to help you navigate the dataset contents:
 
 - Audio to MIDI transcription (aligned MIDI and audio: see Maestro data)
 - Audio or MIDI beat/downbeat tracking, key and time signature estimation (ASAP annotations per file: see annotations.json and *_annotations.txt files) 
@@ -61,7 +61,7 @@ ASAP  contains  **236  distinct  musical  scores**  and  **1067  performances** 
 | Scriabin     	| 13           	| 7        |2     	|
 | **Total**     | 1067           |519      | 222    |
 
-<!--548 of the recordings are available as MIDI only, and others (520) are provided as MIDI and audio recordings  aligned  with  approximately  3  ms  precision.    Each score corresponds with at least one performance (and usually more). Each  musical  score  is  provided  in  both  MusicXML and MIDI formats.  In the MIDI score, the position of all MIDI events are quantized to a metrical grid according to their position in the MusicXML score.  The aligned time signature and tempo change events ensure that the metrical grid of the MIDI score is identical to that of the corresponding  MusicXML  score,  aligning  with  abrupt  time417signature  and  tempo  changes,  as  well  as  gradual  tempo changes such as ritardando and accellerando.  Grace notes are represented in MIDI as notes of very short duration. Repetitions  in  the  score  are  “unfolded”  in  the  MIDI  file such that some sections of the MusicXML score may be duplicated  in  the  MIDI  score.    Except  for  performance mistakes,  there  is  a  one-to-one  correspondence  between424the notes in a MIDI performance and its associated MIDI score.-->
+<!--548 of the recordings are available as MIDI only, and others (520) are provided as MIDI and audio recordings  aligned  with  approximately  3  ms  precision.    Each score corresponds with at least one performance (and usually more). Each  musical  score  is  provided  in  both  MusicXML and MIDI formats.  In the MIDI score, the position of all MIDI events are quantized to a metrical grid according to their position in the MusicXML score.  The aligned time signature and tempo change events ensure that the metrical grid of the MIDI score is identical to that of the corresponding  MusicXML  score,  aligning  with  abrupt  time417signature  and  tempo  changes,  as  well  as  gradual  tempo changes such as ritardando and accelerando.  Grace notes are represented in MIDI as notes of very short duration. Repetitions  in  the  score  are  “unfolded”  in  the  MIDI  file such that some sections of the MusicXML score may be duplicated  in  the  MIDI  score.    Except  for  performance mistakes,  there  is  a  one-to-one  correspondence  between424the notes in a MIDI performance and its associated MIDI score.-->
 
 
 Scores and performances are distributed in a folder system structured as `composer/subgroup/piece` where the `piece` directory contains the XML and MIDI score, plus all of the performances of a specific piece. `subgroup` contains additional hierarchies (e.g., `Bach` contains subgroups `Fugues` and `Preludes`).
@@ -240,12 +240,12 @@ For beat alignments:
 
 For note alignments:
 ```
-@inproceedings{asap-dataset,
-  title={{ASAP}: a dataset of aligned scores and performances for piano transcription},
-  author={Foscarin, Francesco and McLeod, Andrew and Rigaux, Philippe and Jacquemard, Florent and Sakai, Masahiko},
-  booktitle={International Society for Music Information Retrieval Conference {(ISMIR)}},
-  year={2020},
-  pages={534--541}
+@article{Peter-2023,
+ title = {Automatic Note-Level Score-to-Performance Alignments in the ASAP Dataset},
+ author = {Peter, Silvan David and Cancino-Chacón, Carlos Eduardo and Foscarin, Francesco and McLeod, Andrew Philip and Henkel, Florian and Karystinaios, Emmanouil and Widmer, Gerhard},
+ doi = {10.5334/tismir.149},
+ journal = {Transactions of the International Society for Music Information Retrieval {(TISMIR)}},
+ year = {2023}
 }
 ```
 
@@ -258,5 +258,4 @@ For note alignments:
 The dataset is made available under a [Creative Commons Attribution Non-Commercial Share-Alike 4.0 (CC BY-NC-SA 4.0) license](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 #### Versions
-- The current version of ASAP (v1.1) has some corrections, as enumerated in the change notes on the tag [v1.1](https://github.com/fosfrancesco/asap-dataset/releases/tag/v1.1).
-- The initial version of ASAP (as it was released at ISMIR 2020) is available as [v1.0](https://github.com/fosfrancesco/asap-dataset/releases/tag/v1.0).
+- The initial version of (n)ASAP (as it was released for TISMIR 2023) is based on ASAP [v1.1](https://github.com/fosfrancesco/asap-dataset/releases/tag/v1.1).
